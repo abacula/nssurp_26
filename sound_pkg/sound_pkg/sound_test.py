@@ -24,14 +24,37 @@ class SoundTest(Node):
 
     def play_audio(self, x):
         audio_msg = AudioNoteVector()
-        audio_note = AudioNote()
-        if x > 0:
+        # audio_note = AudioNote()
+        # if x > 0:
+            # time_play = Duration()
+            # time_play.sec = 1
+            # audio_note.frequency = 262
+            # audio_note.max_runtime = time_play
+            # audio_msg.notes.append(audio_note)
+            # audio_msg.append = False # Should not overwrite current notes
+
+        audio_msg = self.marry_had_a_little_lamb(audio_msg)
+        return audio_msg
+    
+    def marry_had_a_little_lamb(self, msg):
+        C = 523
+        D = 587
+        E = 659
+        G = 784
+
+        Melody = [E, D, C, D, E]
+
+        for freq in Melody:
+            note = AudioNote()
+            
             time_play = Duration()
             time_play.sec = 1
-            audio_note.frequency = 262
-            audio_note.max_runtime = time_play
-            audio_msg.notes.append(audio_note)
-        return audio_msg
+            note.max_runtime = time_play
+
+            note.frequency = freq
+            msg.notes.append(note)
+
+        return msg
 
 def main(args=None):
     rclpy.init(args=args)
