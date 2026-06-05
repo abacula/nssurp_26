@@ -53,7 +53,7 @@
 //#define LIS3DH_CS 15 // D8 on the ESP board, CS on LIS3DH
 
 // LED DAta pin
-#define DATA_PIN D7 // D0 on the ESP board
+#define DATA_PIN D2 // D0 on the ESP board
 
 // Ultrasonic pins
 #define TRIG_PIN D5 // D1 on the ESP board
