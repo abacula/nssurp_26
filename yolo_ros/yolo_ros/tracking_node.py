@@ -108,6 +108,9 @@ class TrackingNode(LifecycleNode):
         self.image_sub = message_filters.Subscriber(
             self, Image, "image_raw", qos_profile=image_qos_profile
         )
+        # self.image_sub = message_filters.Subscriber(
+        #     self, Image, "/robot4/oakd/rgb/preview/image_raw", qos_profile=image_qos_profile
+        # )
         self.detections_sub = message_filters.Subscriber(
             self, DetectionArray, "detections", qos_profile=10
         )
