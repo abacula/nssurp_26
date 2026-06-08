@@ -466,7 +466,7 @@ class YoloNode(LifecycleNode):
                 keypoints = self.parse_keypoints(results)
 
             # Create detection msgs
-            detections_msg = DetectionArray()
+            detections_msg = DetectionArray() #############################################################################
 
             for i in range(len(results)):
 
