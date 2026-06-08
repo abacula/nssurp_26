@@ -17,12 +17,11 @@
 unsigned long g_timer_0 = 0;
 
 float duration, distance;
-int wait = 100;
+int wait = 1;
 int color_base = 0;
 int color;
 int sat;
 int bright;
-int spin_base = 0;
 
 
 // Cycle for LED blinking
@@ -43,14 +42,11 @@ void setup() {
 
   // Set LEDs to white on start
   for(int i = 0; i < NUM_LEDS; i = i + 1) {
-
         color = 0;
         sat = 255;
-        bright = 0;
-        wait = 50; // in milliseconds
+        bright = 255;
         leds[i] = CHSV(color, sat, bright);
         delay(wait);
-       
       }
       FastLED.show();
       delay(wait);
@@ -65,8 +61,11 @@ void loop() {
   color_base = 0;
 
   //instant(192); // Needs a color int
-  //rainbow(); // Doesn't need variables
-  facing(NUM_LEDS, 1, 160, 0); // Needs a place to change color at, distance to change color around, default color, and secondary color
+  rainbow(); // Doesn't need variables
+  //facing(15, 1, 160, 0); // Needs a place to change color at, distance to change color around, default color, and secondary color
+  //spin(3, 160, 0); // Needs a range to spin, color that is spun, and a background color
+  //pulse(96, 2, 1, 255, 100); // Needs a color to pulse, rate to change, time to wait, max brightness, and min brightness
+  //fade(96, 5, 10); // Needs a color to fade, a rate to fade at, and a time to wait
 
 //  Terminal output
 //    Serial.print("LED loop: ");
@@ -74,17 +73,13 @@ void loop() {
 //    Serial.println(color);
 //    Serial.println(wait);
     FastLED.show();
-    wait = 10;
-    delay(wait);
+    delay(10);
 }
 
 // Instant color change
 void instant(int instantColor)
 {
   color = instantColor;
-  sat = 255;
-  bright = 255;
-  wait = 10;
   
   for(int i = 0; i < NUM_LEDS; i++)
   {
@@ -96,14 +91,8 @@ void instant(int instantColor)
 
 // Rainbow of color around the strip, conforms to strip length
 void rainbow() {
-  
   for(int i = 0; i < NUM_LEDS; i = i + 1) {
    color = round(((float)i)/NUM_LEDS * 255);
-   sat = 255;
-   bright = 255;
-   wait = 10; // in milliseconds
-   
-   bright = 255;
    leds[i] = CHSV(color, sat, bright);
    FastLED.show();
    delay(wait);
@@ -111,33 +100,107 @@ void rainbow() {
   }
 }
 
-// Changes color around 'place' in the array
+// Changes color around 'place' in the LED array
 void facing(int place, int distance, int defaultColor, int faceColor) {
   for(int i = 0; i < NUM_LEDS; i++)
   {
-    sat = 255;
-    bright = 255;
-    wait = 10;
-    
-    if (abs(place-i) <= distance)
-      color = faceColor;
+    if (abs(i-place) <= distance)
+      leds[i] = CHSV(faceColor, sat, bright);
+    else if (i-place < 0)
+    {
+      if (abs(i+NUM_LEDS-place) <= distance)
+        leds[i] = CHSV(faceColor, sat, bright);
+      else
+        leds[i] = CHSV(defaultColor, sat, bright);
+    }
+    else if (place-i < 0)
+    {
+      if (abs(place-i+NUM_LEDS) <= distance)
+        leds[i] = CHSV(faceColor, sat, bright);
+      else
+        leds[i] = CHSV(defaultColor, sat, bright);
+    }
     else
-      color = defaultColor;
+      leds[i] = CHSV(defaultColor, sat, bright);
 
-    leds[i] = CHSV(color, sat, bright);
+    //FastLED.show();
+    delay(wait);
+  }
+  FastLED.show();
+}
+
+// Spins an area of 'range' leds of 'spinColor' along the background of'baseColor'
+void spin(int range, int spinColor, int baseColor)
+{
+  wait = 250;
+
+  for(int i = 0; i < NUM_LEDS; i++)
+  {
+    int place = i-range;
+    if (place < 0)
+      place = NUM_LEDS-(range-i);
+    
+    leds[i] = CHSV(spinColor, sat, bright);
+    leds[place] = CHSV(baseColor, sat, bright);
     FastLED.show();
     delay(wait);
   }
-  //FastLED.show();
 }
 
-// Spins an area of 'size' leds of 'spinColor' along the background of'baseColor'
-void spin(int size, int spinColor, int baseColor)
+// Pulses 'col' constantly between 'maxBri' and 'minBri'
+void pulse(int col, int pulseSpeed, int waitTime, int maxBri, int minBri)
 {
-  sat = 255;
-  bright = 255;
-  wait = 10;
+  color = col;
+  bright -= pulseSpeed;
+  if (bright < minBri)
+    bright = maxBri;
+  for(int i = 0; i < NUM_LEDS; i++)
+    leds[i] = CHSV(color, sat, bright);
+  FastLED.show();
+  delay(waitTime);
+}
 
-  // for ~~~
+// Fades in and out constantly at 'fadeRate' speed
+bool fadeIn = false;
+int fadeBright = 255;
+void fade(int col, int fadeRate, int waitTime)
+{
+  color = col;
+  if (fadeIn)
+  {
+    fadeBright += fadeRate;
+    if (fadeBright + fadeRate > 255)
+      fadeIn = false;
+  }
+  else
+  {
+    fadeBright -= fadeRate;
+    if (fadeBright - fadeRate < 0)
+      fadeIn = true;
+  }
+  for (int i = 0; i < NUM_LEDS; i++)
+    leds[i] = CHSV(color, sat, fadeBright);
+  FastLED.show();
+  delay(waitTime);
+}
 
+// Fades from 'color1' to 'color2'  at 'fadeRate' time (seconds)
+bool greater;
+void fadeTo(int color1, int color2, int fadeRate)
+{
+  if (color1 < color2)
+    greater = true;
+  else
+    greater = false;
+
+  color = color1; // Make this fade tmr
+  
+  for (int i = 0; i < NUM_LEDS; i++)
+    leds[i] = CHSV(color, sat, color);
+}
+
+// Looks like a turn signal. Boolean turn: left is true, right is false
+void turn()
+{
+  bool temp = true; // Get this working tmr
 }
