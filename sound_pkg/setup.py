@@ -19,7 +19,9 @@ setup(
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
-        'console_scripts': [ 'beep_node = sound_pkg.sound_test:main', 'battery_alarm_node = sound_pkg.battery_alarm:main',
+        'console_scripts': [ 'beep_node = sound_pkg.sound_test:main',
+                            'battery_alarm_node = sound_pkg.battery_alarm:main',
+                            'detection_chime_node = sound_pkg.detection_chime:main',
         ],
     },
 )
