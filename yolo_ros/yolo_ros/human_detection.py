@@ -13,20 +13,33 @@ class HumanDetectionNode(Node):
         # Change to have your node name
         super().__init__('human_detection')
         self.human_detection_sub = self.create_subscription(DetectionArray, '/yolo/detections', self.human_cb, 10)
-        self.lightring_pub = self.create_publisher(LightringLeds, '/robot4/cmd_lightring',10)
-    
+        self.ack_pub = self.create_publisher(
+            HallwayAcknowledgment, '/robot4/hallway_acknowledgment', 10)    
     def human_cb(self, detections_msg):
-        human_detected = False
-        for msg in detections_msg.detections:
-            if msg.class_name == 'person' and msg.score > 0.6:
-                human_detected = True
-                break
+        best_detection = None
+        best_score = 0.85  # minimum threshold
 
-        if human_detected:
-            self.get_logger().info("Human detected")
-            self.lightring_pub.publish(self.create_lightring_msg(128, 0, 128))
+        for msg in detections_msg.detections:
+            if msg.class_name == 'person' and msg.score > best_score:
+                best_score = msg.score
+                best_detection = msg
+
+        ack_msg = HallwayAcknowledgment()
+        ack_msg.header = detections_msg.header
+
+        if best_detection is not None:
+            ack_msg.person_detected = True
+            ack_msg.confidence = best_detection.score
+            ack_msg.track_id = best_detection.id
+            ack_msg.position.x = best_detection.bbox.center.position.x
+            ack_msg.position.y = best_detection.bbox.center.position.y
+            ack_msg.bbox_height = best_detection.bbox.size.y
         else:
-            self.lightring_pub.publish(self.create_lightring_msg(0, 255, 0))
+            ack_msg.person_detected = False
+            ack_msg.confidence = 0.0
+            ack_msg.track_id = ""
+
+        self.ack_pub.publish(ack_msg)
         
     def create_lightring_msg(self, r:int, g:int, b:int):
         msg = LightringLeds()
