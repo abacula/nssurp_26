@@ -1,4 +1,3 @@
-
 /// @file    NSpikeShoe.ino
 /// @brief   Get data from an accelerometer and make a chain of LEDs on the shoe respond
 
@@ -39,18 +38,14 @@ void setup() {
 
   // Set up LEDs
   FastLED.addLeds<WS2811, DATA_PIN, RGB>(leds, NUM_LEDS);
+  sat = 255;
+  bright = 255;
 
   // Set LEDs to white on start
-  for(int i = 0; i < NUM_LEDS; i = i + 1) {
-        color = 0;
-        sat = 255;
-        bright = 255;
-        leds[i] = CHSV(color, sat, bright);
-        delay(wait);
-      }
+  for(int i = 0; i < NUM_LEDS; i = i + 1)
+        leds[i] = CHSV(0, 0, 0);
       FastLED.show();
       delay(wait);
- 
 }
 
 
@@ -60,12 +55,15 @@ void loop() {
   // Write LEDs
   color_base = 0;
 
-  //instant(192); // Needs a color int
-  rainbow(); // Doesn't need variables
-  //facing(15, 1, 160, 0); // Needs a place to change color at, distance to change color around, default color, and secondary color
-  //spin(3, 160, 0); // Needs a range to spin, color that is spun, and a background color
-  //pulse(96, 2, 1, 255, 100); // Needs a color to pulse, rate to change, time to wait, max brightness, and min brightness
-  //fade(96, 5, 10); // Needs a color to fade, a rate to fade at, and a time to wait
+  // Colors use the "Spectrum" color map
+  //instant(171); // Needs a color int
+  //rainbow(); // Doesn't need variables
+  //facing(9, 1, 160, 0); // Needs a place to change color at, distance to change color around, default color, and secondary color
+  //spin(3, 171, 0, 100); // Needs a range to spin, color that is spun, a background color, and a speed
+  pulse(85, 2, 1, 255, 100); // Needs a color to pulse, rate to change, time to wait, max brightness, and min brightness
+  //fade(85, 5, 10); // Needs a color to fade, a rate to fade at, and a time to wait
+  //fadeTo(213, 255, 5, 100); // Needs two colors to fade between, a speed to fade at, and a time to wait
+  //turn(42, false, 500); // Needs a turn color, a direction boolean, and a blink time
 
 //  Terminal output
 //    Serial.print("LED loop: ");
@@ -130,7 +128,7 @@ void facing(int place, int distance, int defaultColor, int faceColor) {
 }
 
 // Spins an area of 'range' leds of 'spinColor' along the background of'baseColor'
-void spin(int range, int spinColor, int baseColor)
+void spin(int range, int spinColor, int baseColor, int speed)
 {
   wait = 250;
 
@@ -143,7 +141,7 @@ void spin(int range, int spinColor, int baseColor)
     leds[i] = CHSV(spinColor, sat, bright);
     leds[place] = CHSV(baseColor, sat, bright);
     FastLED.show();
-    delay(wait);
+    delay(speed);
   }
 }
 
@@ -185,22 +183,65 @@ void fade(int col, int fadeRate, int waitTime)
 }
 
 // Fades from 'color1' to 'color2'  at 'fadeRate' time (seconds)
-bool greater;
-void fadeTo(int color1, int color2, int fadeRate)
+bool increase = true; // Starts by going up to the larger color value
+int curCol = -1000000;
+void fadeTo(int color1, int color2, int fadeRate, int waitTime)
 {
-  if (color1 < color2)
-    greater = true;
-  else
-    greater = false;
+  if (curCol == -1000000)
+    curCol = min(color1, color2); // Starts at the smaller color value
 
-  color = color1; // Make this fade tmr
+  if (increase)
+  {
+    curCol += fadeRate;
+    if (curCol >= max(color1, color2))
+      increase = false; // Needs to start going down
+  }
+  else
+  {
+    curCol -= fadeRate;
+    if (curCol <= min(color1, color2))
+      increase = true; // Needs to start going up
+  }
   
   for (int i = 0; i < NUM_LEDS; i++)
-    leds[i] = CHSV(color, sat, color);
+    leds[i] = CHSV(curCol, sat, bright);
+  FastLED.show();
+  delay(waitTime);
 }
 
-// Looks like a turn signal. Boolean turn: left is true, right is false
-void turn()
+// Looks like a turn signal. Boolean 'turn': left is true, right is false
+// Turn signal color is the left/right (area) of the LED strip, assuming back right is 0 and back left is NUM_LEDS
+bool blinking = false;
+void turn(int turnColor, bool turn, int waitTime)
 {
-  bool temp = true; // Get this working tmr
+  for (int i = 0; i < NUM_LEDS; i++)
+  {
+    if (blinking)
+      leds[i] = CHSV(turnColor, sat, 0);
+    else
+    {
+      if (turn) // Left
+      {
+        if (i > NUM_LEDS * 5/8 && i < NUM_LEDS * 7/8)
+          leds[i] = CHSV(turnColor, sat, bright);
+        else
+          leds[i] = CHSV(turnColor, sat, 0);
+      }
+      else // Right
+      {
+        if (i > NUM_LEDS * 1/8 && i < NUM_LEDS * 3/8)
+          leds[i] = CHSV(turnColor, sat, bright);
+        else
+          leds[i] = CHSV(turnColor, sat, 0);
+      }
+    }
+  }
+  
+  if (blinking)
+    blinking = false;
+  else
+    blinking = true;
+  
+  FastLED.show();
+  delay(waitTime);
 }
