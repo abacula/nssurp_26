@@ -16,7 +16,7 @@ class HumanDetectionNode(Node):
         self.ack_pub = self.create_publisher(HallwayAcknowledgment, '/robot4/hallway_ack', 10)    
     def human_cb(self, detections_msg):
         best_detection = None
-        best_score = 0.85  # minimum threshold
+        best_score = 0.75  # minimum threshold
 
         for msg in detections_msg.detections:
             if msg.class_name == 'person' and msg.score > best_score:

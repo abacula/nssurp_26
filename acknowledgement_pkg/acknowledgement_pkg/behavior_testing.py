@@ -20,8 +20,8 @@ class behaviorTest(Node):
         self.light_pub = self.create_publisher(LightringLeds, "/robot4/cmd_lightring", 10)
 
     def behavior_cb(self, msg):
-        if msg.person_detected and msg.confidence >= .88:
-            if msg.bbox_height > 100:
+        if msg.person_detected and msg.confidence >= 0.75:
+            if msg.bbox_height > 90:
                 self.changeLEDS(100,0,100)
                 self.changeSound(True)
                 self.has_seen = True
