@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from yolo_msgs.msg import HallwayAcknowledgment
+from yolo_msgs.msg import HallwayAck
 from irobot_create_msgs.msg import LightringLeds, AudioNote, AudioNoteVector
 from builtin_interfaces.msg import Duration
 
@@ -14,7 +14,7 @@ class behaviorTest(Node):
         super().__init__('behavior_test_node')
         self.has_seen = False
 
-        self.acknowledgement_sub = self.create_subscription(HallwayAcknowledgment, '/robot4/hallway_ack', self.behavior_cb, 10)
+        self.acknowledgement_sub = self.create_subscription(HallwayAck, '/robot4/hallway_ack', self.behavior_cb, 10)
 
         self.sound_pub = self.create_publisher(AudioNoteVector, "/robot4/cmd_audio", 2)
         self.light_pub = self.create_publisher(LightringLeds, "/robot4/cmd_lightring", 10)

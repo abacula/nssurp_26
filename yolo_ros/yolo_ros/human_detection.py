@@ -2,9 +2,8 @@ import rclpy
 from rclpy.node import Node
 
 from yolo_msgs.msg import Detection
-from yolo_msgs.msg import DetectionArray, HallwayAcknowledgment
+from yolo_msgs.msg import DetectionArray, HallwayAck
 from irobot_create_msgs.msg import LightringLeds
-from yolo_msgs.msg import HallwayAck
 # Any additional imports here
 
 # Decide your node class name
@@ -14,12 +13,9 @@ class HumanDetectionNode(Node):
         # Change to have your node name
         super().__init__('human_detection')
         self.human_detection_sub = self.create_subscription(DetectionArray, '/yolo/detections', self.human_cb, 10)
-<<<<<<< HEAD
         self.ack_pub = self.create_publisher(
             HallwayAck, '/robot4/hallway_ack', 10)    
-=======
-        self.ack_pub = self.create_publisher(HallwayAcknowledgment, '/robot4/hallway_ack', 10)    
->>>>>>> a2a7bce9d325a854322840d88165f913b2c9260a
+        
     def human_cb(self, detections_msg):
         best_detection = None
         best_score = 0.75  # minimum threshold
@@ -29,7 +25,7 @@ class HumanDetectionNode(Node):
                 best_score = msg.score
                 best_detection = msg
 
-        ack_msg = HallwayAcknowledgment()
+        ack_msg = HallwayAck()
         ack_msg.header = detections_msg.header
 
         if best_detection is not None:
