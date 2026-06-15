@@ -24,21 +24,21 @@ class Wave(Node):
     def wave(self):
 
         twist = Twist()
-        twist.linear.x = 0
+        twist.linear.x = 0.0
         
-        twist.angular.z = 5
+        twist.angular.z = 5.0
         self.publisher.publish(twist)
         time.sleep(1)
         
-        twist.angular.z = -5
+        twist.angular.z = -5.0
         self.publisher.publish(twist)
         time.sleep(2)
 
-        twist.angular.z = 5
+        twist.angular.z = 5.0
         self.publisher.publish(twist)
         time.sleep(1)
         
-        twist.angular.z = 0
+        twist.angular.z = 0.0
         self.publisher.publish(twist)
 
 

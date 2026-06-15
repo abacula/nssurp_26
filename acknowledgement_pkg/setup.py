@@ -27,6 +27,9 @@ setup(
             'behavior_test_node=acknowledgement_pkg.behavior_testing:main',
             'auto_move = acknowledgement_pkg.auto_movement_test:main',
             'dodge_node = acknowledgement_pkg.faux_dodge:main',
+            'spin_node = acknowledgement_pkg.spin_node:main',
+            'wave_node = acknowledgement_pkg.wave:main',
+            'run_away_node = acknowledgement_pkg.run_away:main',
         ],
     },
 )

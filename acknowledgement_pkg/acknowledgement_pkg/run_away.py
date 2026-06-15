@@ -13,7 +13,8 @@ class RunAway(Node):
         self.saw_person = False
         self.obstacle_detected = False
         self.STOP_DIST = 0.5 # Meters
-        self.turn_time = 10 # 1/10ths of a second?
+        self.turn_time = 50.0 # 1/10ths of a second?
+        self.FORWARD_SPD = 0.5
 
         # Change to have your node name
         super().__init__('run_away_node')
@@ -45,15 +46,15 @@ class RunAway(Node):
         twist = Twist()
         if not self.obstacle_detected and self.saw_person:
             if self.turning and self.turn_time > 0:
-                twist.angular.z = 1
-                twist.linear.x = 0
-                self.turn_time -= 1
+                twist.angular.z = 1.0
+                twist.linear.x = 0.0
+                self.turn_time -= 1.0
             else:
                 twist.linear.x = self.FORWARD_SPD
-                twist.angular.z = 0
+                twist.angular.z = 0.0
         else:
-            twist.linear.x = 0
-            twist.angular.z = 0
+            twist.linear.x = 0.0
+            twist.angular.z = 0.0
 
         self.publisher.publish(twist)
 
