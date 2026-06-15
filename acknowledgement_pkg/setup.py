@@ -26,6 +26,7 @@ setup(
         'console_scripts': [
             'behavior_test_node=acknowledgement_pkg.behavior_testing:main',
             'auto_move = acknowledgement_pkg.auto_movement_test:main',
+            'dodge_node = acknowledgement_pkg.faux_dodge:main',
         ],
     },
 )
