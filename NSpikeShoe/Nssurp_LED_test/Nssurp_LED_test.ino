@@ -60,9 +60,9 @@ void loop() {
   //rainbow(); // Doesn't need variables
   //facing(9, 1, 160, 0); // Needs a place to change color at, distance to change color around, default color, and secondary color
   //spin(3, 171, 0, 100); // Needs a range to spin, color that is spun, a background color, and a speed
-  pulse(85, 2, 1, 255, 100); // Needs a color to pulse, rate to change, time to wait, max brightness, and min brightness
+  //pulse(85, 2, 1, 255, 100); // Needs a color to pulse, rate to change, time to wait, max brightness, and min brightness
   //fade(85, 5, 10); // Needs a color to fade, a rate to fade at, and a time to wait
-  //fadeTo(213, 255, 5, 100); // Needs two colors to fade between, a speed to fade at, and a time to wait
+  //fadeTo(171, 255, 5, 100); // Needs two colors to fade between, a speed to fade at, and a time to wait
   //turn(42, false, 500); // Needs a turn color, a direction boolean, and a blink time
 
 //  Terminal output
