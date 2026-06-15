@@ -3,7 +3,6 @@ from rclpy.node import Node
 from yolo_msgs.msg import HallwayAck
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
-import time
 
 # Any additional imports here
 
@@ -13,8 +12,9 @@ class RunAway(Node):
 
         self.saw_person = False
         self.obstacle_detected = False
-        self.STOP_DIST = 0.3 # Meters
-        self.turn_time = 10.0 # 1/10ths of a second?
+        self.STOP_DIST = 0.5 # Meters
+        self.turn_time = 50.0 # 1/10ths of a second?
+        self.FORWARD_SPD = 0.5
 
         # Change to have your node name
         super().__init__('run_away_node')
@@ -29,7 +29,7 @@ class RunAway(Node):
     
     def hallway_cb(self, msg):
 
-        if msg.person_detected and msg.bbox_height > 80 and self.saw_person == False:
+        if msg.person_detected and self.saw_person == False:
             self.saw_person = True
             self.turning = True
     
@@ -44,15 +44,13 @@ class RunAway(Node):
     def loop(self):
 
         twist = Twist()
-        if not self.saw_person:
-            twist.linear.x = 0.5
-        elif not self.obstacle_detected and self.saw_person:
-            if self.turning:
-                twist.angular.z = 10.0
+        if not self.obstacle_detected and self.saw_person:
+            if self.turning and self.turn_time > 0:
+                twist.angular.z = 1.0
                 twist.linear.x = 0.0
-                time.sleep(self.turn_time)
+                self.turn_time -= 1.0
             else:
-                twist.linear.x = 0.5
+                twist.linear.x = self.FORWARD_SPD
                 twist.angular.z = 0.0
         else:
             twist.linear.x = 0.0
