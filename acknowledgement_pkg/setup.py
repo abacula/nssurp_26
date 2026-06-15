@@ -25,8 +25,12 @@ setup(
     entry_points={
         'console_scripts': [
             'behavior_test_node=acknowledgement_pkg.behavior_testing:main',
-            'auto_move = acknowledgement_pkg.auto_movement_test:main',
-            'dodge_node = acknowledgement_pkg.faux_dodge:main',
+            'auto_move=acknowledgement_pkg.auto_movement_test:main',
+            'dodge_node=acknowledgement_pkg.faux_dodge:main',
+            'slowdown_node=acknowledgement_pkg.slowdown_movement:main',
+            'stop_node=acknowledgement_pkg.stop_movement:main',
         ],
     },
 )
+
+

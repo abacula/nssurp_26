@@ -47,6 +47,7 @@ class DodgeNode(Node):
 
     def control_loop(self):
         # keep rolling forward
+        
         twist = Twist()
         twist.linear.x = self.FORWARD_SPD
         self.get_logger().info("here 3")
