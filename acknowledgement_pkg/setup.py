@@ -25,18 +25,13 @@ setup(
     entry_points={
         'console_scripts': [
             'behavior_test_node=acknowledgement_pkg.behavior_testing:main',
-<<<<<<< HEAD
             'auto_move=acknowledgement_pkg.auto_movement_test:main',
             'dodge_node=acknowledgement_pkg.faux_dodge:main',
             'slowdown_node=acknowledgement_pkg.slowdown_movement:main',
             'stop_node=acknowledgement_pkg.stop_movement:main',
-=======
-            'auto_move = acknowledgement_pkg.auto_movement_test:main',
-            'dodge_node = acknowledgement_pkg.faux_dodge:main',
             'spin_node = acknowledgement_pkg.spin_node:main',
             'wave_node = acknowledgement_pkg.wave:main',
             'run_away_node = acknowledgement_pkg.run_away:main',
->>>>>>> baea4cfcd3c06fe2c726530fbaea0a320067d3d4
         ],
     },
 )

@@ -9,7 +9,7 @@ class BatteryAlarm(Node):
 
         super().__init__('battery_alarm_node')
 
-        self.LOW_BATTERY_THRESHOLD = 0.21        # What battery percentage should it start screaming
+        self.LOW_BATTERY_THRESHOLD = 0.21       # What battery percentage should it start screaming
         self.NUMBER_OF_CHIMES = 0               # How many times has the robot screamed
         self.MAX_CHIMES = 2                     # After how many screams should it stop screaming
         self.DONE_TALKING = False               # Is the robot done screaming
@@ -29,6 +29,7 @@ class BatteryAlarm(Node):
         if (percentage < self.LOW_BATTERY_THRESHOLD and self.NUMBER_OF_CHIMES < self.MAX_CHIMES):
             audio_msg = self.alarm(audio_msg)
             self.NUMBER_OF_CHIMES += 1
+            self.get_logger().info("LOW BATTERY!")
         return audio_msg
     
     def alarm(self, msg):
