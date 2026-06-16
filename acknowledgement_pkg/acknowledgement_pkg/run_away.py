@@ -3,6 +3,9 @@ from rclpy.node import Node
 from yolo_msgs.msg import HallwayAck
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
+from nav_msgs.msg import Odometry
+# ROS TF Transforms
+from tf_transformations import euler_from_quaternion
 
 # Any additional imports here
 
@@ -15,6 +18,9 @@ class RunAway(Node):
         self.STOP_DIST = 0.5 # Meters
         self.turn_time = 50.0 # 1/10ths of a second?
         self.FORWARD_SPD = 0.5
+        self.x = 0
+        self.y = 0
+        self.ang = 0
 
         # Change to have your node name
         super().__init__('run_away_node')
@@ -23,6 +29,9 @@ class RunAway(Node):
         self.publisher = self.create_publisher(Twist, '/robot4/cmd_vel_unstamped', 10)
         self.ack_sub = self.create_subscription(HallwayAck, '/robot4/hallway_ack', self.hallway_cb, 10)
         self.subscriber = self.create_subscription(LaserScan, '/robot4/scan', self.scan_callback, 10)
+         # Subscribe to the odometry (robot location?)
+        self.pos_subscriber = self.create_subscription(Odometry, '/robot4/odom', self.callback_pos, 10)
+
 
 
         self.timer = self.create_timer(0.1, self.loop)
@@ -40,6 +49,14 @@ class RunAway(Node):
                 if distance < self.STOP_DIST:
                     self.obstacle_detected = True
                     break
+    
+    # Callback for pos sub
+    def callback_pos(self, msg):
+        x = msg.pose.pose.position.x
+        y = msg.pose.pose.position.y
+        quaternion = msg.pose.pose.orientation
+         # Angle converted from quaternion to euler
+        (_,_,ang) = euler_from_quaternion([quaternion.x, quaternion.y, quaternion.z, quaternion.w])
 
     def loop(self):
 
