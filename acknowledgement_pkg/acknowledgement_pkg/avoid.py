@@ -7,16 +7,14 @@ from geometry_msgs.msg import Twist
 # Any additional imports here
 
 # Decide your node class name
-class Wave(Node):
+class Avoid(Node):
     def __init__(self):
 
         self.person_detected = False
         self.speed = 0.5
-        self.waving = False
-        self.waved = False
 
         # Change to have your node name
-        super().__init__('wave_node')
+        super().__init__('avoid_node')
         self.has_seen = False
 
         self.publisher = self.create_publisher(Twist, '/robot4/cmd_vel_unstamped', 10)
@@ -26,7 +24,7 @@ class Wave(Node):
     
     def hallway_cb(self, msg):
 
-        if msg.person_detected and msg.bbox_height > 80 and not self.waved:
+        if msg.person_detected and msg.bbox_height > 80:
             self.person_detected = True
             self.wave()
         else:
@@ -34,37 +32,29 @@ class Wave(Node):
 
     def wave(self):
 
-        self.waving = True
-        self.waved = True
-
         twist = Twist()
         twist.linear.x = 0.0
         
-        twist.angular.z = 1.0
+        twist.angular.z = -1.0
         self.publisher.publish(twist)
         time.sleep(0.5)
         
-        twist.angular.z = -1.0
-        self.publisher.publish(twist)
-        time.sleep(0.5)
-        twist.angular.z = -1.0
-        self.publisher.publish(twist)
-        time.sleep(0.5)
-
         twist.angular.z = 1.0
+        self.publisher.publish(twist)
+        time.sleep(1)
+
+        twist.angular.z = -1.0
         self.publisher.publish(twist)
         time.sleep(0.5)
         
         twist.angular.z = 0.0
         self.publisher.publish(twist)
 
-        self.waving = False
-
     def loop(self):
         
         twist = Twist()
         twist.linear.x = 0.5
-        if self.person_detected or self.waving:
+        if self.person_detected:
             twist.linear.x = 0.0
 
         self.publisher.publish(twist)
@@ -74,7 +64,7 @@ def main(args=None):
     rclpy.init(args=args)
 
     # Change to be your node class name
-    node = Wave()
+    node = Avoid()
 
     rclpy.spin(node)
     node.destroy_node()
